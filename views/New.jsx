@@ -23,6 +23,7 @@ class New extends React.Component {
                 </form>
             </div>
         );
+        
     }
 }
 module.exports = New;

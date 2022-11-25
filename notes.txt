@@ -24,13 +24,12 @@ Restful Routes
 7	Destroy     /logs/:id       DELETE                                                  deletes an existing resource in the database
 
 Models
-
 data (javascript variables)
+
 Views
-
 how the data is displayed to the user (HTML)
-Controllers
 
+Controllers
 the glue that connects the models with the views
 
 If you finish lab early consider:
