@@ -14,7 +14,7 @@
 // 10. define a root route to test
 // 11. run the app: node server or nodemon
 //  11b. if nodemon not installed: sudo npm i -g nodemon 
-// ====================== NEW ======================
+// ============================ NEW ============================
 //      Action   URL        HTTP Verb	jsx view filename	mongoose method     what it does
 //      New	    /logs/new	GET	        New.jsx	            none                returns a new form to create a new resource
 // 12. create a new route in server.js
@@ -25,45 +25,67 @@
 // npm install express-react-views react react-dom --save
 // 17. cd views
 // 18. touch New.jsx
-// 19. create the New view
+// 19. create the New view - this will be the html for our New route
 // 20. change your res.send to res.render the New view
-// 21. 
+// ============================ CREATE ============================
+//      Action   URL                HTTP Verb	jsx view filename	mongoose method     what it does
+//      Create	 /logs/ or /logs	POST	    	                Log.create(req.body)    saves a new resource to the database
+// 21. create a Create route in your server.js
+// 22. have it res.send('received') as the response for now
+// 23. use and configure body-parser in your server.js express.urlencoded
+// 24. change the res.send from a string to sending the req.body- it should send the data you inputted to your newform
+// 25. upgrade your data ?
+// 26. change the input of your checkbox to be true/false rather than on
 
-// Inside /views, create a file called Show.jsx(capitalized) - this will be the html for our show route 
-
-const express = require('express');     // 7b  
-const app = express();                  // 7c
-const PORT = 5000                       // 8
+const express = require('express');             // 7b  
+const app = express();                          // 7c
+const PORT = 5000                               // 8
 
 
 // // Configure the app (app.set)
 // app.set('views', __dirname + '/views'); 
 app.set('views', './views') // specify the views directory
 
+
 // // use a view engine to render dynamic templates
 app.set('view engine', 'jsx'); // register the view engine
 app.engine('jsx', require('express-react-views').createEngine());
 
 
+// ============================ MIDDLEWARE  ============================
 
-// // Mount middleware (app.use)
-// process HTTP requests using middleware
+// // Mount middleware to process HTTP requests: (app.use)
+app.use(express.urlencoded({ extended: false }));
+
 
 
 // Mount/Define routes
+// ============================ ROOT ============================
 // Define a "root" route directly on app
 app.get('/', function (req, res) {              // 10
     res.send("<h1>Captain's Log!</h1>");
-  });
+});
 
 
-// NEW
-app.get("/logs/new", (req,res) => {             // 12
-    // res.send("new")                             // 13
+// ============================ NEW ============================
+app.get("/logs/new", (req, res) => {             // 12
+    // res.send("new")                          // 13
     res.render("New")
 })
 
 
-app.listen(PORT,() => {                         // 9
-    console.log('listening on port' , PORT);
+// ============================ CREATE ============================
+app.post("/logs", (req, res) => {               // 21
+    // res.send("received")                     // 22
+    if (req.body.shipIsBroken === "on") {       // 26
+        req.body.shipIsBroken = true
+    } else {
+        req.body.shipIsBroken = false
+    }
+    res.send(req.body)                          // 24
+})
+
+
+app.listen(PORT, () => {                         // 9
+    console.log('listening on port', PORT);
 });

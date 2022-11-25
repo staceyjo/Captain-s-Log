@@ -5,6 +5,7 @@
 // input type checkbox for shipIsBroken
 // input type submit
 
+
 const React = require('react')
 
 class New extends React.Component {
@@ -23,7 +24,6 @@ class New extends React.Component {
                 </form>
             </div>
         );
-        
     }
 }
 module.exports = New;
