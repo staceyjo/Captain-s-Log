@@ -32,6 +32,10 @@ how the data is displayed to the user (HTML)
 Controllers
 the glue that connects the models with the views
 
+Connect to MongoDB Database with Mongoose and MongoDB Atlas:
+- define Mongoose schemas, which are then compiled using the mongoose.modelmethod into Models
+- use a Model to perform all CRUD for a given MongoDB collection.
+
 If you finish lab early consider:
 - adding some CSS and practice styling your app
 - try working with the date object! Try to make it look human readable in HTML.
