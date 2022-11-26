@@ -55,6 +55,18 @@
 // 31i. connect with mongoose
 // 31j. connect express to mongoose
 // 31k. run nodemon to verify connection is working
+// ============================ LOGS MODEL ============================
+// 32. mkdir models
+// 33. cd models
+// 34. touch logs.js
+// 35. Create the logs.js schema
+// 35b. title: string
+// 35c. entry: string
+// 35d. shipIsBroken: Boolean
+// 35e. bonus: shipIsBroken: Boolean- set a default to true
+// 35f. super bonus:as a second argument to mongoose.Schema(), add { timestamps: true }
+
+
 
 require('dotenv').config()                                              // 31f
 const express = require('express');                                     // 7b  
