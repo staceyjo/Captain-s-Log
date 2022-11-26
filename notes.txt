@@ -32,8 +32,14 @@ how the data is displayed to the user (HTML)
 Controllers
 the glue that connects the models with the views
 
+// seeding
+Mongoose is basically the communicator between Node js and Mongo DB.
+Mongoose can help you create a connection to your Database through Node.
+Once you create your Model, defining how you want your Mongo collection should be, then you should be seeding the collection but from a separate file. 
+
+
 Connect to MongoDB Database with Mongoose and MongoDB Atlas:
-- define Mongoose schemas, which are then compiled using the mongoose.modelmethod into Models
+- define Mongoose schemas, which are then compiled using the mongoose.model method into Models
 - use a Model to perform all CRUD for a given MongoDB collection.
 
 If you finish lab early consider:

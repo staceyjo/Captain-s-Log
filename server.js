@@ -69,10 +69,10 @@
 // 36. upgrade your code to create your log in MongoDB
 //     / Have create route create data in MongoDB
 // 36b. require Log schema
-
 // 37. have your route redirect to the show page after create
 // 38. don't forget to git add and git commit your work, give yourself an informative commit message so you can trace back your work, if you need to
-// 39. Stretch: make a seed file and seed it
+// 39. Stretch: make a seed file and seed it:
+// 39b. in captains_log, touch seeds.js file
 
 
 require('dotenv').config();                                                 // 31f
