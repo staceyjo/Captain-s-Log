@@ -14,7 +14,7 @@ class New extends React.Component {
             <div>
                 <h1> Create New Log Entry </h1><br />
                 <nav style={{ color: "blue" }}>
-                    <a href="/fruits">Back to Captain's Log</a>
+                    <a href="/logs">Back to Captain's Log</a>
                 </nav><br />
                 <form action="/logs" method="POST">
                     Title: <input type="text" name="title"></input><br />

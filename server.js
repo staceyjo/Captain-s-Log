@@ -65,37 +65,45 @@
 // 35d. shipIsBroken: Boolean
 // 35e. bonus: shipIsBroken: Boolean- set a default to true
 // 35f. super bonus:as a second argument to mongoose.Schema(), add { timestamps: true }
+// ============================ UPGRADE CREATE ROUTE ============================
+// 36. upgrade your code to create your log in MongoDB
+//     / Have create route create data in MongoDB
+// 36b. require Log schema
+
+// 37. have your route redirect to the show page after create
+// 38. don't forget to git add and git commit your work, give yourself an informative commit message so you can trace back your work, if you need to
+// 39. Stretch: make a seed file and seed it
 
 
-
-require('dotenv').config()                                              // 31f
-const express = require('express');                                     // 7b  
-const app = express();                                                  // 7c
-const PORT = 5000                                                       // 8
-const mongoose = require("mongoose")                                    // 31h
+require('dotenv').config();                                                 // 31f
+const express = require('express');                                         // 7b  
+const app = express();                                                      // 7c
+const PORT = 5000;                                                          // 8
+const mongoose = require("mongoose");                                       // 31h
+const Log = require("./models/logs");                                       // 36b
 
 
 //=================================CONNECTION TO DATABASE WITH MONGOOSE =================================
 
-mongoose.connect(process.env.MONGO_URI, {       // 31i
+mongoose.connect(process.env.MONGO_URI, {                                   // 31i
     useNewUrlParser: true,
     useUnifiedTopology: true,
     // useCreateIndex: true
-  });
+});
 
-mongoose.connection.once("open",() => {         // 31j
-    console.log("connected to mongo")
-})
+mongoose.connection.once("open", () => {                                    // 31j
+    console.log("connected to mongo");
+});
 
 
 // app.set('views', __dirname + '/views'); 
-app.set('views', './views')                                             // 21
-app.set('view engine', 'jsx');                                          // 21b
-app.engine('jsx', require('express-react-views').createEngine());       // 21c
+app.set('views', './views');                                                // 21
+app.set('view engine', 'jsx');                                              // 21b
+app.engine('jsx', require('express-react-views').createEngine());           // 21c
 
 
 // ============================ MIDDLEWARE  ============================
-app.use(express.urlencoded({ extended: false }));                       // 25
+app.use(express.urlencoded({ extended: false }));                           // 25
 
 // Define/Mount middleware to process HTTP requests:
 app.use((req, res, next) => {
@@ -107,30 +115,34 @@ app.use((req, res, next) => {
 // Mount/Define routes
 // ============================ ROOT ===================================
 // Define a "root" route directly on app
-app.get('/', function (req, res) {                                      // 10
+app.get('/', function (req, res) {                                          // 10
     res.send("<h1>Captain's Log!</h1>");
 });
 
 
 // ============================ NEW ====================================
-app.get("/logs/new", (req, res) => {                                    // 12
-    // res.send("new")                                                  // 13
-    res.render("New")                                                   // 22
-})
+app.get("/logs/new", (req, res) => {                                        // 12
+    // res.send("new")                                                      // 13
+    res.render("New");                                                      // 22
+});
 
 
 // ============================ CREATE =================================
-app.post("/logs", (req, res) => {                                       // 23
-    // res.send("received")                                             // 24
-    if (req.body.shipIsBroken === "on") {                               // 28
-        req.body.shipIsBroken = true
+app.post("/logs", (req, res) => {                                           // 23
+    // res.send("received")                                                 // 24
+    if (req.body.shipIsBroken === "on") {                                   // 28
+        req.body.shipIsBroken = true;
     } else {
-        req.body.shipIsBroken = false
+        req.body.shipIsBroken = false;
     }
-    res.send(req.body)                                                  // 26
-})
+    // res.send(req.body)                                                   // 26
+    Log.create(req.body, (error, createdLog) => {                           // 36
+        // res.send(createdLog)                         
+        res.send(createdLog).redirect("/logs/:id");                         // 37
+    });
+});
 
 
-app.listen(PORT, () => {                                                // 9
+app.listen(PORT, () => {                                                    // 9
     console.log('listening on port', PORT);
 });
