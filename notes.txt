@@ -20,8 +20,8 @@ Restful Routes
 3	New	        /logs/new	    GET	        New.jsx	            none                    returns a new form to create a new resource
 4	Create	    /logs/ or /logs	POST	    	                Log.create(req.body)    saves a new resource to the database
 5	Edit        /logs/:id/edit  GET         Edit.jsx            Log.findById()          returns a form to edit an existing resource
-6	Update      /logs/:id       PUT/PATCH                       Log.findByIdAndUpdate() updated an existing resource 
-7	Destroy     /logs/:id       DELETE                          Log.findByIdAndDelete() deletes an existing resource in the database
+6	Update      /logs/:id       PUT/PATCH   Index.jsx           Log.findByIdAndUpdate() updated an existing resource 
+7	Destroy     /logs/:id       DELETE      Index.jsx           Log.findByIdAndDelete() deletes an existing resource in the database
 
 Models
 data (javascript variables)
@@ -50,7 +50,7 @@ SUPER BONUS:
  - Add a second model for comments:
  - it should have the name of the person who wrote it
  - and some text for the comment (maybe time stamps?). 
- - This model should 'belong' the the post, 
+ - This model should 'belong' to the post, 
  - the data should be related in some way. 
  - Do your own research on how to set up a one-to-many relationship 
  - (one post can have many comments, one comment only belongs to one post), 

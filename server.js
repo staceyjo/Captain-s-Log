@@ -13,7 +13,7 @@
 // 9. tell the app to listen on port 5000 for HTTP requests from clients
 // 10. define a root route to test
 // 11. run the app: node server or nodemon
-//  11b. if nodemon not installed: sudo npm i -g nodemon 
+// 11b. if nodemon not installed: sudo npm i -g nodemon 
 // ============================ NEW ============================
 //      Action   URL        HTTP Verb	jsx view filename	mongoose method     what it does
 //      New	    /logs/new	GET	        New.jsx	            none                returns a new form to create a new resource
@@ -29,6 +29,9 @@
 // 21. configure the app/ specify the views directory
 // 21b. set the app to register the view engine
 // 21c. create the view engine to render dynamic templates
+// 21d. for readability change :app.engine('jsx', require('express-react-views').createEngine());
+// to: app.engine("jsx", reactViews.createEngine())
+// 21e. set reactViews dependency: const reactViews = require('express-react-views')
 // 22. change your res.send to res.render the New view
 // 22b. push to github
 // ============================ CREATE ============================
@@ -36,7 +39,7 @@
 //      Create	 /logs/ or /logs	POST	    New.jsx	            Log.create(req.body)    saves a new resource to the database
 // 23. create a Create route in your server.js
 // 24. have it res.send('received') as the response for now
-// 25. use and configure body-parser in your server.js express.urlencoded
+// 25. use and configure body-parser in your server.js express.urlencoded (npm install body parser)
 //     Tell express to use the middleware/ use built-in middleware function to view the body of a post request
 // 26. change the res.send from a string to sending the req.body- it should send the data you inputted to your newform
 // 27. upgrade your data ?
@@ -110,20 +113,40 @@
 // 62. make your delete route in your server.js
 // 63. make your delete route delete your log and redirect back to your index route
 // 64. git add and git commit
+// ============================ EDIT ROUTE ============================
+// 65. Fill out your Restful table
+//      #	Action	    URL	            HTTP Verb	jsx view filename	mongoose method         what it does
+//      6	Update      /logs/:id       PUT/PATCH       Index.jsx           Log.findByIdAndUpdate() updated an existing resource 
+// 66. in your Index.jsx, add a link to your edit route
+// 67. create your edit route in your server.js
+// 68. cd views
+// 69. touch Edit.jsx
+// 70. create your Edit.jsx
+// 71. Test it to make sure it works:
+// ============================ UPDATE ROUTE ============================
+// 72. Fill out your Restful table
+//      #	Action	    URL	            HTTP Verb	jsx view filename	mongoose method         what it does
+//      6	Update      /logs/:id       PUT/PATCH   Index.jsx           Log.findByIdAndUpdate() updated an existing resource 
+// 73. upgrade your Edit.jsx form to have the appropriate action and method
+// 74. create your update/PUT route
+// 75. First, just have it res.send the updated log and check it is as expected
+// 75, when you go back to /logs and refresh, you'll see the updates
+// 76. change the res.send to a res.redirect to your index page
 
 // Create a Layout Folder
 // Make Default.jsx
 // Use The Default.jsx on our pages
 
 
+//=================================DEPENDENCIES =================================
 
 require('dotenv').config();                                                 // 31f
 const express = require('express');                                         // 7b  
 const app = express();                                                      // 7c
 const PORT = 5000;                                                          // 8
+const reactViews = require('express-react-views')                           // 21e
 const mongoose = require("mongoose");                                       // 31h
 const Log = require("./models/logs");                                       // 36b
-const reactViews = require('express-react-views')
 const methodOverride = require('method-override');                          // 60c
 
 //=================================CONNECTION TO DATABASE WITH MONGOOSE =================================
@@ -139,11 +162,12 @@ mongoose.connection.once("open", () => {                                    // 3
 });
 
 
+//=================================SET APP & VIEW ENGINE =================================
 // app.set('views', __dirname + '/views'); 
 app.set('views', './views');                                                // 21
 app.set('view engine', 'jsx');                                              // 21b
-// app.engine('jsx', require('express-react-views').createEngine());           // 21c
-app.engine("jsx", reactViews.createEngine())
+// app.engine('jsx', require('express-react-views').createEngine());        // 21c
+app.engine("jsx", reactViews.createEngine())                                // 21d
 
 // ============================ MIDDLEWARE  ============================
 app.use(express.urlencoded({ extended: false }));                           // 25
@@ -195,10 +219,10 @@ app.get("/logs/new", (req, res) => {                                        // 1
 // ============================ DELETE ===================================
 //      #	Action	    URL	            HTTP Verb	jsx view filename	mongoose method         what it does
 //      7	Destroy     /logs/:id       DELETE       Index.jsx          Log.findByIdAndDelete() deletes an existing resource in the database
-app.delete("/logs/:id", (req, res) => {
-    Log.findByIdAndDelete(req.params.id, (err, data) => {
+app.delete("/logs/:id", (req, res) => {                                     // 62
+    Log.findByIdAndDelete(req.params.id, (error, data) => {
         // res.send("deleting");
-        res.redirect("/logs")
+        res.redirect("/logs")                                               // 63
     })
 });
 
@@ -207,6 +231,18 @@ app.delete("/logs/:id", (req, res) => {
 //      #	Action	    URL	            HTTP Verb	jsx view filename	mongoose method         what it does
 //      6	Update      /logs/:id       PUT/PATCH                       Log.findByIdAndUpdate() updates an existing resource 
 
+app.put("/logs/:id", (req, res) => {                                            // 74
+    if(req.body.shipIsBroken === "on"){
+        req.body.shipIsBroken = true;
+    } else {
+        req.body.shipIsBroken = false;
+    }
+    Log.findByIdAndUpdate(req.params.id, req.body, (error, editedLog)=> {
+        // res.send(editedLog)                                                     // 75
+        console.log(editedLog)
+        res.redirect(`/logs/${req.params.id}`)                                     // 76
+    })
+})
 
 // ============================ CREATE =================================
 //      #	Action	    URL	            HTTP Verb	jsx view filename	mongoose method         what it does
@@ -222,7 +258,11 @@ app.post("/logs", (req, res) => {                                           // 2
     // res.send(req.body)                                                   // 26
     Log.create(req.body, (error, createdLog) => {                           // 36
         // res.send(createdLog)                         
-        res.redirect("/logs");                                              // 37
+        if(!error) {
+            res.status(200).redirect("/logs");                              // 37
+        } else {
+            res.status(400).send(error);
+        }
     });
 });
 
@@ -230,6 +270,17 @@ app.post("/logs", (req, res) => {                                           // 2
 // ============================ EDIT ===================================
 //      #	Action	    URL	            HTTP Verb	jsx view filename	mongoose method         what it does
 //      5	Edit        /logs/:id/edit  GET         Edit.jsx            Log.findById()          returns a form to edit an existing resource
+
+app.get("/logs/:id/edit", (req, res) => {
+    Log.findById(req.params.id, (error, foundLog) => {
+        if(!error) {
+            res.status(200).render("Edit", {log:foundLog})
+        } else {
+            res.status(400).send({msg:error.message})
+        }
+    })
+})
+
 
 
 // ============================ SHOW ===================================
