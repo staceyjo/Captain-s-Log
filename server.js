@@ -73,6 +73,31 @@
 // 38. don't forget to git add and git commit your work, give yourself an informative commit message so you can trace back your work, if you need to
 // 39. Stretch: make a seed file and seed it:
 // 39b. in captains_log, touch seeds.js file
+// ============================ INDEX ROUTE ============================
+// 40. in server.js make an index route
+// 41. test it by res.send("index")
+// 42. fill out you restful table:
+//      #	Action	    URL	            HTTP Verb	jsx view filename	mongoose method         what it does
+//      1	Index	    /logs/ or /logs	GET	        Index.jsx	        Log.find()              returns a collection of resources
+// 43. create Index.jsx
+// 44. change res.send to res.render Index.jsx
+// 45. in Index.jsc add link to create new log
+
+
+
+// ============================ SHOW ROUTE ============================
+// . fill out restful table:
+//      Restful Routes
+//       #	Action	    URL	            HTTP Verb	jsx view filename	mongoose method         what it does
+//      1	Index	    /logs/ or /logs	GET	        Index.jsx	        Log.find()              returns a collection of resources
+//      2	Show        /logs/:id       GET         Show.jsx                                    returns an existing resource
+//      3	New	        /logs/new	    GET	        New.jsx	            none                    returns a new form to create a new resource
+//      4	Create	    /logs/ or /logs	POST	    	                Log.create(req.body)    saves a new resource to the database
+//      5	Edit        /logs/:id/edit  GET         Edit.jsx                                    returns a form to edit an existing resource
+//      6	Update      /logs/:id       PUT/PATCH                                               updated an existing resource 
+//      7	Destroy     /logs/:id       DELETE                                                  deletes an existing resource in the database
+// 41. in server.js make a show route, be sure to follow the Restful convention
+// 42. create a mongo query and res.send your data as a string
 
 
 require('dotenv').config();                                                 // 31f
@@ -81,7 +106,7 @@ const app = express();                                                      // 7
 const PORT = 5000;                                                          // 8
 const mongoose = require("mongoose");                                       // 31h
 const Log = require("./models/logs");                                       // 36b
-
+const reactViews = require('express-react-views')
 
 //=================================CONNECTION TO DATABASE WITH MONGOOSE =================================
 
@@ -99,8 +124,8 @@ mongoose.connection.once("open", () => {                                    // 3
 // app.set('views', __dirname + '/views'); 
 app.set('views', './views');                                                // 21
 app.set('view engine', 'jsx');                                              // 21b
-app.engine('jsx', require('express-react-views').createEngine());           // 21c
-
+// app.engine('jsx', require('express-react-views').createEngine());           // 21c
+app.engine("jsx", reactViews.createEngine())
 
 // ============================ MIDDLEWARE  ============================
 app.use(express.urlencoded({ extended: false }));                           // 25
@@ -115,19 +140,53 @@ app.use((req, res, next) => {
 // Mount/Define routes
 // ============================ ROOT ===================================
 // Define a "root" route directly on app
+
 app.get('/', function (req, res) {                                          // 10
     res.send("<h1>Captain's Log!</h1>");
 });
 
+// ============================ INDEX ===================================
+//      #	Action	    URL	                HTTP Verb	jsx view filename	mongoose method         what it does
+//      1	Index	    /logs/ or /logs	    GET	        Index.jsx	        Log.find()              returns a collection of resources
+
+app.get("/logs", (req, res) => {                                            // 40
+        // res.send("index")                                                // 41
+        // res.render("Index")
+    Log.find({}, (error, allLogs) => {
+        if(!error) {
+            res.status(200).render("Index", {                               // 44
+               logs: allLogs 
+            })
+        } else {
+            res.status(400).send(error)
+        }
+    })
+})
+
 
 // ============================ NEW ====================================
+//      #	Action	    URL	            HTTP Verb	jsx view filename	mongoose method         what it does
+//      3	New	        /logs/new	    GET	        New.jsx	            none                    returns a new form to create a new resource
+
 app.get("/logs/new", (req, res) => {                                        // 12
     // res.send("new")                                                      // 13
     res.render("New");                                                      // 22
 });
 
+// ============================ DELETE ===================================
+//      #	Action	    URL	            HTTP Verb	jsx view filename	mongoose method         what it does
+//      7	Destroy     /logs/:id       DELETE                                                  deletes an existing resource in the database
+
+
+// ============================ UPDATE ===================================
+//      #	Action	    URL	            HTTP Verb	jsx view filename	mongoose method         what it does
+//      6	Update      /logs/:id       PUT/PATCH                                               updated an existing resource 
+
 
 // ============================ CREATE =================================
+//      #	Action	    URL	            HTTP Verb	jsx view filename	mongoose method         what it does
+//      4	Create	    /logs/ or /logs	POST	    	                Log.create(req.body)    saves a new resource to the database
+
 app.post("/logs", (req, res) => {                                           // 23
     // res.send("received")                                                 // 24
     if (req.body.shipIsBroken === "on") {                                   // 28
@@ -138,9 +197,43 @@ app.post("/logs", (req, res) => {                                           // 2
     // res.send(req.body)                                                   // 26
     Log.create(req.body, (error, createdLog) => {                           // 36
         // res.send(createdLog)                         
-        res.send(createdLog).redirect("/logs/:id");                         // 37
+        res.redirect("/logs");                             // 37
     });
 });
+
+
+// ============================ EDIT ===================================
+//      #	Action	    URL	            HTTP Verb	jsx view filename	mongoose method         what it does
+//      5	Edit        /logs/:id/edit  GET         Edit.jsx                                    returns a form to edit an existing resource
+
+
+// ============================ SHOW ===================================
+//      #	Action	    URL	            HTTP Verb	jsx view filename	mongoose method         what it does
+//      2	Show        /logs/:id       GET         Show.jsx                                    returns an existing resource
+
+app.get("/logs/:id", (req, res) => {                                        // 
+    Log.findById(req.params.id, (error, foundLog) => {
+        res.send(foundLog)                                                  // 
+    })
+})
+
+// app.get('/fruits/:id', (req, res)=>{
+//     Fruit.findById(req.params.id, (err, foundFruit)=>{
+//         res.send(foundFruit);
+//     });
+// });
+
+// app.get("/fruits/:id", (req, res) => {
+//     Fruit.findById(req.params.id , (error, foundFruit) => {
+//         if (!error) {
+//             res.status(200).render("fruits/Show", {
+//                 fruit:foundFruit
+//             })
+//         } else {
+//             res.status(400).send(error)
+//         }
+//     })
+// })
 
 
 app.listen(PORT, () => {                                                    // 9

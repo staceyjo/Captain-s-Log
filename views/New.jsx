@@ -12,6 +12,9 @@ class New extends React.Component {
     render() {
         return (
             <div>
+                <head>
+                    <title>New</title>
+                </head>
                 <h1> Create New Log Entry </h1><br />
                 <nav style={{ color: "blue" }}>
                     <a href="/logs">Back to Captain's Log</a>
