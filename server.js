@@ -33,7 +33,7 @@
 // 22b. push to github
 // ============================ CREATE ============================
 //      Action   URL                HTTP Verb	jsx view filename	mongoose method     what it does
-//      Create	 /logs/ or /logs	POST	    	                Log.create(req.body)    saves a new resource to the database
+//      Create	 /logs/ or /logs	POST	    New.jsx	            Log.create(req.body)    saves a new resource to the database
 // 23. create a Create route in your server.js
 // 24. have it res.send('received') as the response for now
 // 25. use and configure body-parser in your server.js express.urlencoded
@@ -84,8 +84,8 @@
 // 45. in Index.jsc add link to create new log
 // ============================ SHOW ROUTE ============================
 // 46. fill out restful table:
-//       #	Action	    URL	            HTTP Verb	jsx view filename	mongoose method         what it does
-//      2	Show        /logs/:id       GET         Show.jsx                                    returns an existing resource
+//      #	Action	    URL	            HTTP Verb	jsx view filename	mongoose method         what it does
+//      2	Show        /logs/:id       GET         Show.jsx            Log.findById()          returns an existing resource
 // 47. in server.js make a show route
 // 48. create a mongo query and res.send your data as a string
 // 49. upgrade Index.jsx so that each title links to its show page
@@ -96,6 +96,26 @@
 // 54. add a link back to the index page
 // 55. if you had added time stamps to your model, display the date the entry was created
 // 56. upgrade your res.send to a res.render of your Show.jsx
+// 57. git add and git commit
+// ============================ DELETE ROUTE ============================
+// 58. fill out the restful table
+//      #	Action	    URL	            HTTP Verb	jsx view filename	mongoose method         what it does
+//      7	Destroy     /logs/:id       DELETE         Index.jsx        Log.findByIdAndDelete() deletes an existing resource in the database
+// 59. in Index.jsx, add a delete form
+// 60. install and configure method-override
+// 60b. npm i method-override
+// 60c. include the method-override package: const methodOverride = require('method-override');
+// 60d. after app has been defined, use methodOverride.  We'll be adding a query parameter to our delete form named _method
+// 61. upgrade your delete form to have the appropriate action and method
+// 62. make your delete route in your server.js
+// 63. make your delete route delete your log and redirect back to your index route
+// 64. git add and git commit
+
+// Create a Layout Folder
+// Make Default.jsx
+// Use The Default.jsx on our pages
+
+
 
 require('dotenv').config();                                                 // 31f
 const express = require('express');                                         // 7b  
@@ -104,6 +124,7 @@ const PORT = 5000;                                                          // 8
 const mongoose = require("mongoose");                                       // 31h
 const Log = require("./models/logs");                                       // 36b
 const reactViews = require('express-react-views')
+const methodOverride = require('method-override');                          // 60c
 
 //=================================CONNECTION TO DATABASE WITH MONGOOSE =================================
 
@@ -126,6 +147,7 @@ app.engine("jsx", reactViews.createEngine())
 
 // ============================ MIDDLEWARE  ============================
 app.use(express.urlencoded({ extended: false }));                           // 25
+app.use(methodOverride('_method'));                                         // 60d
 
 // Define/Mount middleware to process HTTP requests:
 app.use((req, res, next) => {
@@ -172,12 +194,18 @@ app.get("/logs/new", (req, res) => {                                        // 1
 
 // ============================ DELETE ===================================
 //      #	Action	    URL	            HTTP Verb	jsx view filename	mongoose method         what it does
-//      7	Destroy     /logs/:id       DELETE                                                  deletes an existing resource in the database
+//      7	Destroy     /logs/:id       DELETE       Index.jsx          Log.findByIdAndDelete() deletes an existing resource in the database
+app.delete("/logs/:id", (req, res) => {
+    Log.findByIdAndDelete(req.params.id, (err, data) => {
+        // res.send("deleting");
+        res.redirect("/logs")
+    })
+});
 
 
 // ============================ UPDATE ===================================
 //      #	Action	    URL	            HTTP Verb	jsx view filename	mongoose method         what it does
-//      6	Update      /logs/:id       PUT/PATCH                                               updated an existing resource 
+//      6	Update      /logs/:id       PUT/PATCH                       Log.findByIdAndUpdate() updates an existing resource 
 
 
 // ============================ CREATE =================================
@@ -201,12 +229,12 @@ app.post("/logs", (req, res) => {                                           // 2
 
 // ============================ EDIT ===================================
 //      #	Action	    URL	            HTTP Verb	jsx view filename	mongoose method         what it does
-//      5	Edit        /logs/:id/edit  GET         Edit.jsx                                    returns a form to edit an existing resource
+//      5	Edit        /logs/:id/edit  GET         Edit.jsx            Log.findById()          returns a form to edit an existing resource
 
 
 // ============================ SHOW ===================================
 //      #	Action	    URL	            HTTP Verb	jsx view filename	mongoose method         what it does
-//      2	Show        /logs/:id       GET         Show.jsx            Log.findById            returns an existing resource
+//      2	Show        /logs/:id       GET         Show.jsx            Log.findById()          returns an existing resource
 
 app.get("/logs/:id", (req, res) => {                                        // 47
     Log.findById(req.params.id, (error, logData) => {
@@ -221,17 +249,6 @@ app.get("/logs/:id", (req, res) => {                                        // 4
     })
 })
 
-// app.get("/fruits/:id", (req, res) => {
-//     Fruit.findById(req.params.id , (error, foundFruit) => {
-//         if (!error) {
-//             res.status(200).render("fruits/Show", {
-//                 fruit:foundFruit
-//             })
-//         } else {
-//             res.status(400).send(error)
-//         }
-//     })
-// })
 
 
 app.listen(PORT, () => {                                                    // 9

@@ -16,12 +16,12 @@ DELETE	        Delete              deletes something from our data source
 Restful Routes
 #	Action	    URL	            HTTP Verb	jsx view filename	mongoose method         what it does
 1	Index	    /logs/ or /logs	GET	        Index.jsx	        Log.find()              returns a collection of resources
-2	Show        /logs/:id       GET         Show.jsx                                    returns an existing resource
+2	Show        /logs/:id       GET         Show.jsx            Log.findById()          returns an existing resource
 3	New	        /logs/new	    GET	        New.jsx	            none                    returns a new form to create a new resource
 4	Create	    /logs/ or /logs	POST	    	                Log.create(req.body)    saves a new resource to the database
-5	Edit        /logs/:id/edit  GET         Edit.jsx                                    returns a form to edit an existing resource
-6	Update      /logs/:id       PUT/PATCH                                               updated an existing resource 
-7	Destroy     /logs/:id       DELETE                                                  deletes an existing resource in the database
+5	Edit        /logs/:id/edit  GET         Edit.jsx            Log.findById()          returns a form to edit an existing resource
+6	Update      /logs/:id       PUT/PATCH                       Log.findByIdAndUpdate() updated an existing resource 
+7	Destroy     /logs/:id       DELETE                          Log.findByIdAndDelete() deletes an existing resource in the database
 
 Models
 data (javascript variables)
