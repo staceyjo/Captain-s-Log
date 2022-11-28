@@ -82,23 +82,20 @@
 // 43. create Index.jsx
 // 44. change res.send to res.render Index.jsx
 // 45. in Index.jsc add link to create new log
-
-
-
 // ============================ SHOW ROUTE ============================
-// . fill out restful table:
-//      Restful Routes
+// 46. fill out restful table:
 //       #	Action	    URL	            HTTP Verb	jsx view filename	mongoose method         what it does
-//      1	Index	    /logs/ or /logs	GET	        Index.jsx	        Log.find()              returns a collection of resources
 //      2	Show        /logs/:id       GET         Show.jsx                                    returns an existing resource
-//      3	New	        /logs/new	    GET	        New.jsx	            none                    returns a new form to create a new resource
-//      4	Create	    /logs/ or /logs	POST	    	                Log.create(req.body)    saves a new resource to the database
-//      5	Edit        /logs/:id/edit  GET         Edit.jsx                                    returns a form to edit an existing resource
-//      6	Update      /logs/:id       PUT/PATCH                                               updated an existing resource 
-//      7	Destroy     /logs/:id       DELETE                                                  deletes an existing resource in the database
-// 41. in server.js make a show route, be sure to follow the Restful convention
-// 42. create a mongo query and res.send your data as a string
-
+// 47. in server.js make a show route
+// 48. create a mongo query and res.send your data as a string
+// 49. upgrade Index.jsx so that each title links to its show page
+// 50. cd views, touch Show.jsx and add HTML:
+// 51. show the title
+// 52. show the entry
+// 53. show whether the ship is broken or not
+// 54. add a link back to the index page
+// 55. if you had added time stamps to your model, display the date the entry was created
+// 56. upgrade your res.send to a res.render of your Show.jsx
 
 require('dotenv').config();                                                 // 31f
 const express = require('express');                                         // 7b  
@@ -150,12 +147,12 @@ app.get('/', function (req, res) {                                          // 1
 //      1	Index	    /logs/ or /logs	    GET	        Index.jsx	        Log.find()              returns a collection of resources
 
 app.get("/logs", (req, res) => {                                            // 40
-        // res.send("index")                                                // 41
-        // res.render("Index")
+    // res.send("index")                                                // 41
+    // res.render("Index")
     Log.find({}, (error, allLogs) => {
-        if(!error) {
+        if (!error) {
             res.status(200).render("Index", {                               // 44
-               logs: allLogs 
+                logs: allLogs
             })
         } else {
             res.status(400).send(error)
@@ -197,7 +194,7 @@ app.post("/logs", (req, res) => {                                           // 2
     // res.send(req.body)                                                   // 26
     Log.create(req.body, (error, createdLog) => {                           // 36
         // res.send(createdLog)                         
-        res.redirect("/logs");                             // 37
+        res.redirect("/logs");                                              // 37
     });
 });
 
@@ -209,19 +206,20 @@ app.post("/logs", (req, res) => {                                           // 2
 
 // ============================ SHOW ===================================
 //      #	Action	    URL	            HTTP Verb	jsx view filename	mongoose method         what it does
-//      2	Show        /logs/:id       GET         Show.jsx                                    returns an existing resource
+//      2	Show        /logs/:id       GET         Show.jsx            Log.findById            returns an existing resource
 
-app.get("/logs/:id", (req, res) => {                                        // 
-    Log.findById(req.params.id, (error, foundLog) => {
-        res.send(foundLog)                                                  // 
+app.get("/logs/:id", (req, res) => {                                        // 47
+    Log.findById(req.params.id, (error, logData) => {
+        // res.send(logData)                                                // 48 
+        if(!error) {
+            res.status(200).render("Show", {                                //56
+                log:logData
+            })
+        } else {
+            res.status(400).send(error)
+        }
     })
 })
-
-// app.get('/fruits/:id', (req, res)=>{
-//     Fruit.findById(req.params.id, (err, foundFruit)=>{
-//         res.send(foundFruit);
-//     });
-// });
 
 // app.get("/fruits/:id", (req, res) => {
 //     Fruit.findById(req.params.id , (error, foundFruit) => {

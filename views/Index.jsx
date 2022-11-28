@@ -1,5 +1,6 @@
 // 43. create Index.jsx
 // 45. add link to create new log entry
+// 49. upgrade Index.jsx so that each title links to its show page
 
 const React = require('react');
 
