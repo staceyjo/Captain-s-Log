@@ -132,6 +132,12 @@
 // 75. First, just have it res.send the updated log and check it is as expected
 // 75, when you go back to /logs and refresh, you'll see the updates
 // 76. change the res.send to a res.redirect to your index page
+// ============================ ROUTER/CONTROLLERS ============================
+// 77. mkdir controllers
+// 78. cd controllers
+// 79. touch logs.js
+// 80. work on refactoring your code so your logs routes are in your controller file, rather than in server.js
+// 81. require controller and add to dependencies: const logsController = require("./controllers/logs")
 
 // Create a Layout Folder
 // Make Default.jsx
@@ -148,6 +154,7 @@ const reactViews = require('express-react-views')                           // 2
 const mongoose = require("mongoose");                                       // 31h
 const Log = require("./models/logs");                                       // 36b
 const methodOverride = require('method-override');                          // 60c
+const logsController = require("./controllers/logs")                        // 81
 
 //=================================CONNECTION TO DATABASE WITH MONGOOSE =================================
 
@@ -175,130 +182,132 @@ app.use(methodOverride('_method'));                                         // 6
 
 // Define/Mount middleware to process HTTP requests:
 app.use((req, res, next) => {
-    // console.log('I run for all routes');
+    console.log('I run for all routes');
     next();
 });
 
 
-// Mount/Define routes
-// ============================ ROOT ===================================
-// Define a "root" route directly on app
+// // Mount/Define routes
+app.use("/logs", logsController)
 
-app.get('/', function (req, res) {                                          // 10
-    res.send("<h1>Captain's Log!</h1>");
-});
+// // ============================ ROOT ===================================
+// // Define a "root" route directly on app
+
+// app.get('/', function (req, res) {                                          // 10
+//     res.send("<h1>Captain's Log!</h1>");
+// });
 
 // ============================ INDEX ===================================
 //      #	Action	    URL	                HTTP Verb	jsx view filename	mongoose method         what it does
 //      1	Index	    /logs/ or /logs	    GET	        Index.jsx	        Log.find()              returns a collection of resources
 
-app.get("/logs", (req, res) => {                                            // 40
-    // res.send("index")                                                // 41
-    // res.render("Index")
-    Log.find({}, (error, allLogs) => {
-        if (!error) {
-            res.status(200).render("Index", {                               // 44
-                logs: allLogs
-            })
-        } else {
-            res.status(400).send(error)
-        }
-    })
-})
+// app.get("/logs", (req, res) => {                                            // 40
+//     // res.send("index")                                                    // 41
+//     // res.render("Index")
+//     Log.find({}, (error, allLogs) => {
+//         if (!error) {
+//             res.status(200).render("Index", {                               // 44
+//                 logs: allLogs
+//             })
+//         } else {
+//             res.status(400).send(error)
+//         }
+//     })
+// })
 
 
-// ============================ NEW ====================================
-//      #	Action	    URL	            HTTP Verb	jsx view filename	mongoose method         what it does
-//      3	New	        /logs/new	    GET	        New.jsx	            none                    returns a new form to create a new resource
+// // ============================ NEW ====================================
+// //      #	Action	    URL	            HTTP Verb	jsx view filename	mongoose method         what it does
+// //      3	New	        /logs/new	    GET	        New.jsx	            none                    returns a new form to create a new resource
 
-app.get("/logs/new", (req, res) => {                                        // 12
-    // res.send("new")                                                      // 13
-    res.render("New");                                                      // 22
-});
+// app.get("/logs/new", (req, res) => {                                        // 12
+//     // res.send("new")                                                      // 13
+//     res.render("New");                                                      // 22
+// });
 
-// ============================ DELETE ===================================
-//      #	Action	    URL	            HTTP Verb	jsx view filename	mongoose method         what it does
-//      7	Destroy     /logs/:id       DELETE       Index.jsx          Log.findByIdAndDelete() deletes an existing resource in the database
-app.delete("/logs/:id", (req, res) => {                                     // 62
-    Log.findByIdAndDelete(req.params.id, (error, data) => {
-        // res.send("deleting");
-        res.redirect("/logs")                                               // 63
-    })
-});
-
-
-// ============================ UPDATE ===================================
-//      #	Action	    URL	            HTTP Verb	jsx view filename	mongoose method         what it does
-//      6	Update      /logs/:id       PUT/PATCH                       Log.findByIdAndUpdate() updates an existing resource 
-
-app.put("/logs/:id", (req, res) => {                                            // 74
-    if(req.body.shipIsBroken === "on"){
-        req.body.shipIsBroken = true;
-    } else {
-        req.body.shipIsBroken = false;
-    }
-    Log.findByIdAndUpdate(req.params.id, req.body, (error, editedLog)=> {
-        // res.send(editedLog)                                                     // 75
-        console.log(editedLog)
-        res.redirect(`/logs/${req.params.id}`)                                     // 76
-    })
-})
-
-// ============================ CREATE =================================
-//      #	Action	    URL	            HTTP Verb	jsx view filename	mongoose method         what it does
-//      4	Create	    /logs/ or /logs	POST	    	                Log.create(req.body)    saves a new resource to the database
-
-app.post("/logs", (req, res) => {                                           // 23
-    // res.send("received")                                                 // 24
-    if (req.body.shipIsBroken === "on") {                                   // 28
-        req.body.shipIsBroken = true;
-    } else {
-        req.body.shipIsBroken = false;
-    }
-    // res.send(req.body)                                                   // 26
-    Log.create(req.body, (error, createdLog) => {                           // 36
-        // res.send(createdLog)                         
-        if(!error) {
-            res.status(200).redirect("/logs");                              // 37
-        } else {
-            res.status(400).send(error);
-        }
-    });
-});
+// // ============================ DELETE ===================================
+// //      #	Action	    URL	            HTTP Verb	jsx view filename	mongoose method         what it does
+// //      7	Destroy     /logs/:id       DELETE       Index.jsx          Log.findByIdAndDelete() deletes an existing resource in the database
+// app.delete("/logs/:id", (req, res) => {                                     // 62
+//     Log.findByIdAndDelete(req.params.id, (error, data) => {
+//         // res.send("deleting");
+//         res.redirect("/logs")                                               // 63
+//     })
+// });
 
 
-// ============================ EDIT ===================================
-//      #	Action	    URL	            HTTP Verb	jsx view filename	mongoose method         what it does
-//      5	Edit        /logs/:id/edit  GET         Edit.jsx            Log.findById()          returns a form to edit an existing resource
+// // ============================ UPDATE ===================================
+// //      #	Action	    URL	            HTTP Verb	jsx view filename	mongoose method         what it does
+// //      6	Update      /logs/:id       PUT/PATCH                       Log.findByIdAndUpdate() updates an existing resource 
 
-app.get("/logs/:id/edit", (req, res) => {
-    Log.findById(req.params.id, (error, foundLog) => {
-        if(!error) {
-            res.status(200).render("Edit", {log:foundLog})
-        } else {
-            res.status(400).send({msg:error.message})
-        }
-    })
-})
+// app.put("/logs/:id", (req, res) => {                                            // 74
+//     if(req.body.shipIsBroken === "on"){
+//         req.body.shipIsBroken = true;
+//     } else {
+//         req.body.shipIsBroken = false;
+//     }
+//     Log.findByIdAndUpdate(req.params.id, req.body, (error, editedLog)=> {
+//         // res.send(editedLog)                                                     // 75
+//         console.log(editedLog)
+//         res.redirect(`/logs/${req.params.id}`)                                     // 76
+//     })
+// })
+
+// // ============================ CREATE =================================
+// //      #	Action	    URL	            HTTP Verb	jsx view filename	mongoose method         what it does
+// //      4	Create	    /logs/ or /logs	POST	    	                Log.create(req.body)    saves a new resource to the database
+
+// app.post("/logs", (req, res) => {                                           // 23
+//     // res.send("received")                                                 // 24
+//     if (req.body.shipIsBroken === "on") {                                   // 28
+//         req.body.shipIsBroken = true;
+//     } else {
+//         req.body.shipIsBroken = false;
+//     }
+//     // res.send(req.body)                                                   // 26
+//     Log.create(req.body, (error, createdLog) => {                           // 36
+//         // res.send(createdLog)                         
+//         if(!error) {
+//             res.status(200).redirect("/logs");                              // 37
+//         } else {
+//             res.status(400).send(error);
+//         }
+//     });
+// });
+
+
+// // ============================ EDIT ===================================
+// //      #	Action	    URL	            HTTP Verb	jsx view filename	mongoose method         what it does
+// //      5	Edit        /logs/:id/edit  GET         Edit.jsx            Log.findById()          returns a form to edit an existing resource
+
+// app.get("/logs/:id/edit", (req, res) => {
+//     Log.findById(req.params.id, (error, foundLog) => {
+//         if(!error) {
+//             res.status(200).render("Edit", {log:foundLog})
+//         } else {
+//             res.status(400).send({msg:error.message})
+//         }
+//     })
+// })
 
 
 
-// ============================ SHOW ===================================
-//      #	Action	    URL	            HTTP Verb	jsx view filename	mongoose method         what it does
-//      2	Show        /logs/:id       GET         Show.jsx            Log.findById()          returns an existing resource
+// // ============================ SHOW ===================================
+// //      #	Action	    URL	            HTTP Verb	jsx view filename	mongoose method         what it does
+// //      2	Show        /logs/:id       GET         Show.jsx            Log.findById()          returns an existing resource
 
-app.get("/logs/:id", (req, res) => {                                        // 47
-    Log.findById(req.params.id, (error, logData) => {
-        // res.send(logData)                                                // 48 
-        if(!error) {
-            res.status(200).render("Show", {                                //56
-                log:logData
-            })
-        } else {
-            res.status(400).send(error)
-        }
-    })
-})
+// app.get("/logs/:id", (req, res) => {                                        // 47
+//     Log.findById(req.params.id, (error, foundLog) => {
+//         // res.send(foundLog)                                                // 48 
+//         if(!error) {
+//             res.status(200).render("Show", {                                // 56
+//                 log:foundLog
+//             })
+//         } else {
+//             res.status(400).send(error)
+//         }
+//     })
+// })
 
 
 
